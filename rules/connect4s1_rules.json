@@ -1,0 +1,133 @@
+{
+    "rules":{
+        "name": "Connect 4 across America",
+        "type":"claim",
+        "decks":
+            {
+            "main_deck":
+                {
+                    "team":"any",
+                    "deck":[
+                    {
+                        "name": "Catch Three Local Bugs",
+                        "challenge": "You must have all 3 bugs at the same time. \n\n The bugs do not have to be local in origin but you must have caught them in the state. \n\n They must be different kinds of bugs. You may not, for example, catch 3 mosquitos.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Get One Team Member Intoxicated",
+                        "challenge": "You may get intoxicated at any bar in the state. \n\n If there are no bars open, you may go to a restaurant. If there are no restaurants or bars open, you may get drunk wherever you like. \n\n If it is impossible to buy alcohol in the next hour, you may draw another card.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Eat Spicy Food",
+                        "challenge": "Go to a local Indian restaurant and ask them for the hottest food they can serve you. Eat the entire thing. \n\n While ordering, you must say “I want the spiciest thing on the menu”. \n\n If there is no Indian restaurant open within 20 miles, you may go to a Chinese, Thai, or Mexican restaurant. \n\n If no such restaurants are open within 20 miles, you may draw another card.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Bowl A Strike",
+                        "challenge": "It must be at a bowling alley. You cannot use makeshift bowling pins. \n\n If there is not an open bowling alley within 20 miles, you may pull another card",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Buy the Local Paper and Solve One of the Puzzles",
+                        "challenge": "The paper must be local to the town or the state. \n\n If no local paper has any puzzles, then draw a new card.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Bury a Treasure",
+                        "challenge": "The treasure must be worth at least $50. \n\n You must leave a conspicuous sign next to the treasure so that someone may find it. \n\n The buried treasure must be completely covered. \n\n The treasure must be at least 3 inches underground. \n\n The treasure cannot be cash or a check. \n\n You must preserve the treasure such that whoever digs it up can use/enjoy it. This may be as simple as putting it in a plastic bag.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Find a Statue and Recreate It",
+                        "challenge": "The statue must be at least 100 meters from the capitol building. \n\n You may not use the internet to locate the statue. \n\n You must hold the pose for at least 5 minutes. \n\n The statue does not need to be human, but you still must do your best to recreate it with your bodies.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Eat the State Dish",
+                        "challenge": "You must eat at least one serving of the dish - a serving is up to reasonable interpretation. \n\n See the state dish guide for reference.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Paint a Local Landscape",
+                        "challenge": "You must present your painting to the camera. \n\n You must make a reasonable attempt to create a decent painting, using several colors and covering the majority of the canvas. \n\n The painting must be on canvas or easel.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Get a Pedicure",
+                        "challenge": "Both members must get the pedicure. It must be both feet. \n\n You must get your nails painted the state colors. If the state does not have official state colors, you may get a clear coat. \n\n You may not ask the salon to be quick or indicate in any way that you are under time pressure. \n\n If there is no salon within 20 miles that offers pedicures and is currently open, you may pull another card.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Attend a Local Event",
+                        "challenge": "This means a gathering of multiple people at a scheduled event that is open to the public. \n\n You must meaningfully participate in the event.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Paint Your Teammates Face as the State Flag",
+                        "challenge": "This must cover their full face. \n\n It must recognizably be the state flag. \n\n You can use any paint, but you should probably use face paint. Makeup is also acceptable.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Go to a Museum",
+                        "challenge": "You must buy entry to and spend at least a half hour at a museum of your choice. \n\n You must tell the camera five fun facts you learned. \n\n The museum must be in the state. \n\n If there is not an open museum within 20 miles, you may pull another card.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Busk and Earn a Dollar",
+                        "challenge": "You may have a sign, but you may not verbally ask people for money. \n\n You must do some sort of performance to earn the money, you cannot just ask for it. \n\n You may add any money earned to the budget.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Eat the State Dessert",
+                        "challenge": "You must eat at least one serving of the dessert - a serving is up to reasonable interpretation. \n\n See the state dish guide for reference.",
+                        "victory": {"claim":"current"}
+                    },
+                    {
+                        "name": "Claim the State Immediately But ...",
+                        "challenge": "In order to book your next flight, you must call the airline and not use the following words. If you say any of the words, you must apologize, hang up, and try again. You may not rehearse or write out what you are going to say ahead of time. \n\n Flight \n Fly \n Go \n Plane \n Time \n Yes \n No \n Arrive \n Depart \n Leaving \n Get \n Need \n Want \n Hello \n Hi \n (Any City Name) \n",
+                        "victory": {"claim":"current", "effect":{"claim":"immediate"}}
+                    }
+                    ]
+                }
+            },
+        "teams":{
+            "Adam and Ben":{
+                "players":["Adam Chase", "Ben Doyle"],
+                "vetos_possible": 2,
+                "budget":5000.0,
+                "current_pos": {"name":"Illinois","coord":[1,2],"type":"state"}
+            },
+            "Sam and Brian":{
+                "players":["Sam Denby", "Brian McManus"],
+                "vetos_possible": 2,
+                "budget":5000.0,
+                "current_pos": {"name":"Illinois","coord":[1,2],"type":"state"}
+            }
+        },
+        "possible_claims":[
+            {"name":"Washington","type":"state"},
+            {"name":"Oregon","type":"state"},
+            {"name":"California","type":"state"},
+            {"name":"Idaho","type":"state"},
+            {"name":"Nevada","type":"state"},
+            {"name":"Arizona","type":"state"},
+            {"name":"Montana","type":"state"},
+            {"name":"Wyoming","type":"state"},
+            {"name":"Utah","type":"state"},
+            {"name":"Colorado","type":"state"},
+            {"name":"New Mexico","type":"state"},
+            {"name":"North Dakota","type":"state"},
+            {"name":"South Dakota","type":"state"},
+            {"name":"Nebraska","type":"state"},
+            {"name":"Kansas","type":"state"},
+            {"name":"Oklahoma","type":"state"},
+            {"name":"Texas","type":"state"},
+            {"name":"Minnesota","type":"state"},
+            {"name":"Iowa","type":"state"},
+            {"name":"Missouri","type":"state"},
+            {"name":"Arkansas","type":"state"},
+            {"name":"Louisiana","type":"state"}
+        ]
+    }
+}
