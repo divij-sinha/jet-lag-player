@@ -1,0 +1,69 @@
+{
+    "rules":{
+        "name": "Schengen Showdown",
+        "type":"claim",
+        "decks":
+            {
+            "main_deck":
+                {
+                    "team":"any",
+                    "deck":[
+                    {
+                        "name": "Play Classical Music on Non-Classical Instruments",
+                        "challenge": "Beethoven's Ninth Symphony debuted in Austria in 1824. In this challenge, you must play the famous 'Ode to Joy' theme, but you may not use any musical instruments. The challenge is complete once you play the selected portion of the piece correctly (all correct pitches, on beat, at least 140 BPM). You may rehearse as many times as you'd like. You may only make one official attempt at your performance.",
+                        "victory": {"claim":"Austria", "type":"country"}
+                    },
+                    {
+                        "name": "Play Waffle Pong",
+                        "challenge": "Belgium is known for their waffles. Get a waffle and one container/package of a food that would fit in the waffle's holes (think M&M's, gummy bears, peas, that kind of thing). Place the waffle 2m away from you. You must land a small food in each of the waffle's complete holes to win. You may only throw each unit of small food once. If you run out of small food and have not filled the waffle, you fail. Regardless, you must eat the waffle and anything you caught in it at the end of the challenge.",
+                        "victory": {"claim":"Belgium", "type":"country"}
+                    }
+                    ]
+                }
+            },
+        "teams":{
+            "Adam and Ben":{
+                "players":["Adam Chase", "Ben Doyle"],
+                "budget":6000.0,
+                "current_pos": {"name":"London","type":"start"}
+            },
+            "Sam and Tom":{
+                "players":["Sam Denby", "Tom Scott"],
+                "budget":6000.0,
+                "current_pos": {"name":"London","type":"start"}
+            }
+        },
+        "possible_claims":[
+            {"name":"Austria","type":"country"},
+            {"name":"Belgium","type":"country"},
+            {"name":"Bulgaria","type":"country"},
+            {"name":"Croatia","type":"country"},
+            {"name":"Czechia","type":"country"},
+            {"name":"Denmark","type":"country"},
+            {"name":"Estonia","type":"country"},
+            {"name":"Finland","type":"country"},
+            {"name":"France","type":"country"},
+            {"name":"Germany","type":"country"},
+            {"name":"Greece","type":"country"},
+            {"name":"Hungary","type":"country"},
+            {"name":"Iceland","type":"country"},
+            {"name":"Italy","type":"country"},
+            {"name":"Latvia","type":"country"},
+            {"name":"Liechtenstein","type":"country"},
+            {"name":"Lithuania","type":"country"},
+            {"name":"Luxembourg","type":"country"},
+            {"name":"Malta","type":"country"},
+            {"name":"Monaco","type":"country"},
+            {"name":"Netherlands","type":"country"},
+            {"name":"Norway","type":"country"},
+            {"name":"Poland","type":"country"},
+            {"name":"Portugal","type":"country"},
+            {"name":"Romania","type":"country"},
+            {"name":"Slovakia","type":"country"},
+            {"name":"Slovenia","type":"country"},
+            {"name":"Spain","type":"country"},
+            {"name":"Sweden","type":"country"},
+            {"name":"Switzerland","type":"country"}
+]
+    }
+}

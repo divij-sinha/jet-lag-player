@@ -1,11 +1,12 @@
+from typing import Dict, List, Tuple
+
 from pydantic import BaseModel, Field
-from decimal import Decimal
-from typing import List, Tuple, Dict, Optional
 
 
 class Victory(BaseModel):
     claim: str = Field(default=None)
     budget: float = Field(default=0.0)
+    type: str = Field(default=None)
 
 
 class Card(BaseModel):
@@ -36,7 +37,7 @@ class Claim(BaseModel):
 
 class Position(BaseModel):
     name: str
-    coord: Tuple[float, float]
+    coord: Tuple[float, float] = Field(default=None)
     type: str
 
 
@@ -45,7 +46,7 @@ class Team(BaseModel):
     current_claims: List[Claim] = Field(default=[])
     current_card: Card = Field(default=None)
     players: List[str]
-    vetos_possible: int
+    vetos_possible: int = Field(default=0)
     vetos_used: int = Field(default=0)
     budget: float
 

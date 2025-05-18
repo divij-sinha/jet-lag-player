@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Schengen Showdown!</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+    <link rel="icon" href="favicon.png">
+</head>
+
+<body>
+    <h1>Schengen Showdown</h1>
+    {% if messages %}
+    <h2> Messages</h2>
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <h2>Current Board</h2>
+    <h3>Teams</h3>
+    <ul>
+        {% for team, val in board.teams.items() %}
+        <li>
+            {{ team }} currently at {{ val["current_pos"]["name"] }} claiming {{ val["current_claims"] }}
+            {% if val["current_card"] %}
+            <br />
+            <strong>Current card:</strong>
+            {{ val["current_card"] }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    <h2> Next move </h2>
+    <form method="GET" action="/team_travel">
+        <label for="team_name">Team:</label>
+        <select name="team_name" id="team_name">
+            {% for team in board.teams.keys() %}
+            <option value="{{ team }}">{{ team }}</option>
+            {% endfor %}
+        </select>
+        <br />
+        <label for="new_pos">Country:</label>
+        <select name="new_pos" id="new_pos">
+            {% for country in board.possible_claims %}
+            <option value="{{ country.name }}">{{ country.name }}</option>
+            {% endfor %}
+            <br />
+            <input type="submit" value="Submit Move" />
+    </form>
+    <h2> Pull Cards </h2>
+    <form method="GET" action="/pull_card">
+        <label for="team_name">Team:</label>
+        <select name="team_name" id="team_name">
+            {% for team in board.teams.keys() %}
+            <option value="{{ team }}">{{ team }}</option>
+            {% endfor %}
+        </select>
+        <br />
+        <input type="submit" value="Pull Card" />
+    </form>
+
+</body>
+
+</html>
