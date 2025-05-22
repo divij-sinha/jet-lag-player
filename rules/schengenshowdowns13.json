@@ -1,69 +1,578 @@
 {
-    "rules":{
+    "rules": {
         "name": "Schengen Showdown",
-        "type":"claim",
-        "decks":
-            {
-            "main_deck":
-                {
-                    "team":"any",
-                    "deck":[
-                    {
-                        "name": "Play Classical Music on Non-Classical Instruments",
-                        "challenge": "Beethoven's Ninth Symphony debuted in Austria in 1824. In this challenge, you must play the famous 'Ode to Joy' theme, but you may not use any musical instruments. The challenge is complete once you play the selected portion of the piece correctly (all correct pitches, on beat, at least 140 BPM). You may rehearse as many times as you'd like. You may only make one official attempt at your performance.",
-                        "victory": {"claim":"Austria", "type":"country"}
-                    },
-                    {
-                        "name": "Play Waffle Pong",
-                        "challenge": "Belgium is known for their waffles. Get a waffle and one container/package of a food that would fit in the waffle's holes (think M&M's, gummy bears, peas, that kind of thing). Place the waffle 2m away from you. You must land a small food in each of the waffle's complete holes to win. You may only throw each unit of small food once. If you run out of small food and have not filled the waffle, you fail. Regardless, you must eat the waffle and anything you caught in it at the end of the challenge.",
-                        "victory": {"claim":"Belgium", "type":"country"}
-                    }
-                    ]
-                }
-            },
-        "teams":{
-            "Adam and Ben":{
-                "players":["Adam Chase", "Ben Doyle"],
-                "budget":6000.0,
-                "current_pos": {"name":"London","type":"start"}
-            },
-            "Sam and Tom":{
-                "players":["Sam Denby", "Tom Scott"],
-                "budget":6000.0,
-                "current_pos": {"name":"London","type":"start"}
+        "type": "claim",
+        "decks": {
+            "main_deck": {
+                "team": "any",
+                "deck": []
             }
         },
-        "possible_claims":[
-            {"name":"Austria","type":"country"},
-            {"name":"Belgium","type":"country"},
-            {"name":"Bulgaria","type":"country"},
-            {"name":"Croatia","type":"country"},
-            {"name":"Czechia","type":"country"},
-            {"name":"Denmark","type":"country"},
-            {"name":"Estonia","type":"country"},
-            {"name":"Finland","type":"country"},
-            {"name":"France","type":"country"},
-            {"name":"Germany","type":"country"},
-            {"name":"Greece","type":"country"},
-            {"name":"Hungary","type":"country"},
-            {"name":"Iceland","type":"country"},
-            {"name":"Italy","type":"country"},
-            {"name":"Latvia","type":"country"},
-            {"name":"Liechtenstein","type":"country"},
-            {"name":"Lithuania","type":"country"},
-            {"name":"Luxembourg","type":"country"},
-            {"name":"Malta","type":"country"},
-            {"name":"Monaco","type":"country"},
-            {"name":"Netherlands","type":"country"},
-            {"name":"Norway","type":"country"},
-            {"name":"Poland","type":"country"},
-            {"name":"Portugal","type":"country"},
-            {"name":"Romania","type":"country"},
-            {"name":"Slovakia","type":"country"},
-            {"name":"Slovenia","type":"country"},
-            {"name":"Spain","type":"country"},
-            {"name":"Sweden","type":"country"},
-            {"name":"Switzerland","type":"country"}
-]
+        "teams": {
+            "Adam and Ben": {
+                "players": [
+                    "Adam Chase",
+                    "Ben Doyle"
+                ],
+                "budget": 6000.0,
+                "current_pos": {
+                    "name": "London",
+                    "type": "start"
+                }
+            },
+            "Sam and Tom": {
+                "players": [
+                    "Sam Denby",
+                    "Tom Scott"
+                ],
+                "budget": 6000.0,
+                "current_pos": {
+                    "name": "London",
+                    "type": "start"
+                }
+            }
+        },
+        "possible_claims": [
+            {
+                "name": "Austria",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Play Classical Music on Non-Classical Instruments",
+                    "challenge": "Beethoven's Ninth Symphony debuted in Austria in 1824. In this challenge, you must play the famous 'Ode to Joy' theme, but you may not use any musical instruments. The challenge is complete once you play the selected portion of the piece correctly (all correct pitches, on beat, at least 140 BPM). You may rehearse as many times as you'd like. You may only make one official attempt at your performance.",
+                    "victory": {
+                        "claim": "Austria",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 0.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Belgium",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Play Waffle Pong",
+                    "challenge": "Belgium is known for their waffles. Get a waffle and one container/package of a food that would fit in the waffle's holes (think M&M's, gummy bears, peas, that kind of thing). Place the waffle 2m away from you. You must land a small food in each of the waffle's complete holes to win. You may only throw each unit of small food once. If you run out of small food and have not filled the waffle, you fail. Regardless, you must eat the waffle and anything you caught in it at the end of the challenge.",
+                    "victory": {
+                        "claim": "Belgium",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 0.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Bulgaria",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Bulgaria",
+                    "challenge": "Complete the standard activity for Bulgaria.",
+                    "victory": {
+                        "claim": "Bulgaria",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Croatia",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Croatia",
+                    "challenge": "Complete the standard activity for Croatia.",
+                    "victory": {
+                        "claim": "Croatia",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Czechia",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Czechia",
+                    "challenge": "Complete the standard activity for Czechia.",
+                    "victory": {
+                        "claim": "Czechia",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Denmark",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Denmark",
+                    "challenge": "Complete the standard activity for Denmark.",
+                    "victory": {
+                        "claim": "Denmark",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Estonia",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Estonia",
+                    "challenge": "Complete the standard activity for Estonia.",
+                    "victory": {
+                        "claim": "Estonia",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Finland",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Finland",
+                    "challenge": "Complete the standard activity for Finland.",
+                    "victory": {
+                        "claim": "Finland",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "France",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for France",
+                    "challenge": "Complete the standard activity for France.",
+                    "victory": {
+                        "claim": "France",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Germany",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Germany",
+                    "challenge": "Complete the standard activity for Germany.",
+                    "victory": {
+                        "claim": "Germany",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Greece",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Greece",
+                    "challenge": "Complete the standard activity for Greece.",
+                    "victory": {
+                        "claim": "Greece",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Hungary",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Hungary",
+                    "challenge": "Complete the standard activity for Hungary.",
+                    "victory": {
+                        "claim": "Hungary",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Iceland",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Iceland",
+                    "challenge": "Complete the standard activity for Iceland.",
+                    "victory": {
+                        "claim": "Iceland",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Italy",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Italy",
+                    "challenge": "Complete the standard activity for Italy.",
+                    "victory": {
+                        "claim": "Italy",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Latvia",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Latvia",
+                    "challenge": "Complete the standard activity for Latvia.",
+                    "victory": {
+                        "claim": "Latvia",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Liechtenstein",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Liechtenstein",
+                    "challenge": "Complete the standard activity for Liechtenstein.",
+                    "victory": {
+                        "claim": "Liechtenstein",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Lithuania",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Lithuania",
+                    "challenge": "Complete the standard activity for Lithuania.",
+                    "victory": {
+                        "claim": "Lithuania",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Luxembourg",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Luxembourg",
+                    "challenge": "Complete the standard activity for Luxembourg.",
+                    "victory": {
+                        "claim": "Luxembourg",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Malta",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Malta",
+                    "challenge": "Complete the standard activity for Malta.",
+                    "victory": {
+                        "claim": "Malta",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Monaco",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Monaco",
+                    "challenge": "Complete the standard activity for Monaco.",
+                    "victory": {
+                        "claim": "Monaco",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Netherlands",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Netherlands",
+                    "challenge": "Complete the standard activity for Netherlands.",
+                    "victory": {
+                        "claim": "Netherlands",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Norway",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Norway",
+                    "challenge": "Complete the standard activity for Norway.",
+                    "victory": {
+                        "claim": "Norway",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Poland",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Poland",
+                    "challenge": "Complete the standard activity for Poland.",
+                    "victory": {
+                        "claim": "Poland",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Portugal",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Portugal",
+                    "challenge": "Complete the standard activity for Portugal.",
+                    "victory": {
+                        "claim": "Portugal",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Romania",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Romania",
+                    "challenge": "Complete the standard activity for Romania.",
+                    "victory": {
+                        "claim": "Romania",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Slovakia",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Slovakia",
+                    "challenge": "Complete the standard activity for Slovakia.",
+                    "victory": {
+                        "claim": "Slovakia",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Slovenia",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Slovenia",
+                    "challenge": "Complete the standard activity for Slovenia.",
+                    "victory": {
+                        "claim": "Slovenia",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Spain",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Spain",
+                    "challenge": "Complete the standard activity for Spain.",
+                    "victory": {
+                        "claim": "Spain",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Sweden",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Sweden",
+                    "challenge": "Complete the standard activity for Sweden.",
+                    "victory": {
+                        "claim": "Sweden",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            },
+            {
+                "name": "Switzerland",
+                "type": "country",
+                "challenge_card": {
+                    "name": "Standard Challenge for Switzerland",
+                    "challenge": "Complete the standard activity for Switzerland.",
+                    "victory": {
+                        "claim": "Switzerland",
+                        "type": "country"
+                    },
+                    "effects": null,
+                    "card_budget": 50.0
+                },
+                "status": "unclaimed",
+                "pending_team_name": null,
+                "claimed_by_team_name": null,
+                "teams_at_location": []
+            }
+        ]
     }
 }

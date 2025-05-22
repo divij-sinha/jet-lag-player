@@ -1,8 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
+from typing import Optional # Added Optional
 
 from games import SchengenShowdown
-from models import Position
+# Position might not be needed if team_travel directly takes new_pos_name as str
+from models import Position 
 
 # connect4_s1 = Connect4("rules/connect4s1_rules.json")
 # print(connect4_s1.board)
@@ -22,19 +24,24 @@ def read_root(request: Request):
 
 
 @app.get("/team_travel")
-def team_travel(request: Request, team_name: str, new_pos: str, cost: int = 0):
-    new_pos = Position(name=new_pos, type="country")
-    messages = schengen_showdown_s13.team_travel(team_name, new_pos, cost)
+def team_travel(request: Request, team_name: str, new_pos_name: str, cost: int = 0):
+    # The game logic for team_travel now expects new_pos_name as a string
+    # Position object creation is handled within the game logic if needed, or team.current_pos is directly a string.
+    # Based on previous refactoring, team.current_pos is a Position object, 
+    # but team_travel in games.py expects new_pos_name as str.
+    messages = schengen_showdown_s13.team_travel(team_name=team_name, new_pos_name=new_pos_name, cost=cost)
     return templates.TemplateResponse("index.html", {"request": request, "board": schengen_showdown_s13.board, "messages": messages})
 
 
-@app.get("/pull_card")
-def pull_card(request: Request, team_name: str):
-    messages = schengen_showdown_s13.pull_card("main_deck", team_name)
+# Removed /pull_card endpoint
+
+
+@app.get("/complete_challenge")
+async def complete_challenge_endpoint(request: Request, team_name: str):
+    messages = schengen_showdown_s13.complete_challenge(team_name)
     return templates.TemplateResponse("index.html", {"request": request, "board": schengen_showdown_s13.board, "messages": messages})
 
-
-@app.get("/finish_card")
-async def finish_card(request: Request, team_name: str):
-    messages = schengen_showdown_s13.finish_card(team_name)
+@app.get("/attempt_challenge")
+async def attempt_challenge_endpoint(request: Request, team_name: str, location_name: Optional[str] = None):
+    messages = schengen_showdown_s13.attempt_challenge(team_name=team_name, location_name=location_name)
     return templates.TemplateResponse("index.html", {"request": request, "board": schengen_showdown_s13.board, "messages": messages})

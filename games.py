@@ -1,4 +1,5 @@
 import json
+from typing import Optional # Added Optional
 
 import numpy as np
 
@@ -76,128 +77,142 @@ class SchengenShowdown:
     def __init__(self, json_path: str) -> None:
         self.board = load_json_game(json_path)
 
-    def team_travel(self, team_name: str, new_pos: Position, cost: float) -> list[str]:
+    def team_travel(self, team_name: str, new_pos_name: str, cost: float = 0.0) -> list[str]:
         messages = []
         team = self.board.teams[team_name]
-        team.current_pos = new_pos
-        team.budget -= cost
-        messages.append(f"Team {team_name} moved to {new_pos.name} spending {cost}")
-        for claim_idx, pos_claim in enumerate(self.board.possible_claims):
-            if new_pos.name == pos_claim.name:
-                for other_teams in self.board.claims.keys():
-                    if pos_claim in self.board.claims[other_teams]:
-                        messages.append(f"{pos_claim.name} already claimed by {other_teams}")
-                        return messages
-                messages.append(f"Team {team_name} claimed {pos_claim.name}")
-                if team_name not in self.board.claims.keys():
-                    self.board.claims[team_name] = []
-                self.board.claims[team_name].append(pos_claim)
-                self.board.teams[team_name].current_claims.append(pos_claim)
+        
+        old_pos_name = None
+        if team.current_pos and team.current_pos.name: # Make sure current_pos and its name are not None
+            old_pos_name = team.current_pos.name
 
+        # Handle departure from old location
+        if old_pos_name and old_pos_name != new_pos_name: # Check if old_pos_name is valid and different from new
+            old_location_state = next((loc for loc in self.board.possible_claims if loc.name == old_pos_name), None)
+            if old_location_state:
+                if team_name in old_location_state.teams_at_location:
+                    old_location_state.teams_at_location.remove(team_name)
+                    messages.append(f"{team_name} departed from {old_pos_name}.")
+                
+                if old_location_state.pending_team_name == team_name:
+                    old_location_state.pending_team_name = None
+                    old_location_state.status = "unclaimed"
+                    messages.append(f"{team_name} left {old_pos_name}, abandoning their pending claim. {old_pos_name} is now 'unclaimed'.")
+                    # Clear the challenge card if it was for the abandoned claim
+                    if team.current_challenge_card and team.current_challenge_card.victory.claim == old_pos_name:
+                        team.current_challenge_card = None
+                        messages.append(f"{team_name}'s challenge card for {old_pos_name} was cleared.")
+            else:
+                messages.append(f"Warning: Old position '{old_pos_name}' not found in possible_claims.")
+
+
+        # Update team's position and budget
+        team.current_pos = Position(name=new_pos_name, type="country") # Assuming 'country' type for now
+        team.budget -= cost
+        messages.append(f"{team_name} traveled to {new_pos_name}. Budget is now {team.budget}.")
+
+        # Handle arrival at new location
+        new_location_state = next((loc for loc in self.board.possible_claims if loc.name == new_pos_name), None)
+        if new_location_state:
+            if team_name not in new_location_state.teams_at_location:
+                new_location_state.teams_at_location.append(team_name)
+                messages.append(f"{team_name} arrived at {new_pos_name}. Teams here: {', '.join(new_location_state.teams_at_location)}.")
+            
+            # Report status of the new location
+            if new_location_state.status == "unclaimed":
+                messages.append(f"{new_pos_name} is unclaimed. {team_name} can attempt the challenge here.")
+            elif new_location_state.status == "pending":
+                messages.append(f"{new_pos_name} has a pending claim by {new_location_state.pending_team_name}. {team_name} can attempt to contest.")
+            elif new_location_state.status == "claimed":
+                messages.append(f"{new_pos_name} is already claimed by {new_location_state.claimed_by_team_name}.")
+        else:
+            messages.append(f"Warning: New position '{new_pos_name}' not found in possible_claims.")
+            
         return messages
 
     def pull_card(self, deck_name: str, team_name: str) -> list[str]:
-        messages = []
-        
-        if deck_name not in self.board.decks:
-            messages.append(f"Deck '{deck_name}' not found.")
-            return messages
-        source_deck_model = self.board.decks[deck_name]
+        return [f"Debug: 'pull_card' for deck '{deck_name}' by team '{team_name}' - this action is likely deprecated or needs redesign for location-specific challenges."]
 
+    def attempt_challenge(self, team_name: str, location_name: Optional[str] = None) -> list[str]:
+        messages = []
         team = self.board.teams[team_name]
 
-        if not ((team_name == source_deck_model.team) or ("any" == source_deck_model.team)):
-            messages.append(f"Team {team_name} is not allowed to pull from deck {deck_name}.")
-            return messages
-
-        if not team.current_pos:
-            messages.append(f"Team {team_name} has no current position, cannot determine card eligibility.")
-            return messages
-            
-        if team.current_card:
-            messages.append(f"Team {team_name} already has an active card: {team.current_card.name}. Finish it first.")
-            return messages
-
-        card_to_pull_idx = -1
-        pulled_card_obj = None # Use a different variable name to avoid confusion
-
-        for idx, card_in_deck in enumerate(source_deck_model.deck):
-            if card_in_deck.victory.claim == team.current_pos.name:
-                # Check if this claim is still available in board.possible_claims
-                is_claim_still_available = any(
-                    pc.name == card_in_deck.victory.claim and pc.type == card_in_deck.victory.type
-                    for pc in self.board.possible_claims
-                )
-                
-                if is_claim_still_available:
-                    pulled_card_obj = card_in_deck
-                    card_to_pull_idx = idx
-                    break # Found a suitable card
-                # else:
-                    # Optionally, message if card targets an already claimed location
-                    # messages.append(f"Card '{card_in_deck.name}' targets location '{card_in_deck.victory.claim}', which is no longer available.")
+        if not location_name:
+            if team.current_pos and team.current_pos.name:
+                location_name = team.current_pos.name
+            else:
+                messages.append(f"{team_name} has no current position to attempt a challenge.")
+                return messages
         
-        if pulled_card_obj is not None and card_to_pull_idx != -1:
-            team.current_card = pulled_card_obj
-            source_deck_model.deck.pop(card_to_pull_idx) # Remove the card from the source deck
-            messages.append(f"Team {team_name} pulled card '{pulled_card_obj.name}' from {deck_name}. Card removed from source deck.")
-        else:
-            messages.append(f"Team {team_name} could not pull a card from {deck_name} for their current location '{team.current_pos.name}'. This could be because no card targets this location, the location is already claimed, or the deck is empty.")
+        target_location_state = next((loc for loc in self.board.possible_claims if loc.name == location_name), None)
+
+        if not target_location_state:
+            messages.append(f"Location '{location_name}' not found.")
+            return messages
+
+        if team_name not in target_location_state.teams_at_location:
+            messages.append(f"{team_name} is not at {location_name}.")
+            return messages
+
+        if target_location_state.status == "claimed":
+            messages.append(f"{location_name} is already permanently claimed by {target_location_state.claimed_by_team_name}.")
+            return messages
+        
+        # Check if team is already working on a different challenge
+        if team.current_challenge_card and team.current_challenge_card.victory.claim != location_name:
+            messages.append(f"{team_name} is already working on a challenge for {team.current_challenge_card.victory.claim}. Complete or abandon it first.")
+            return messages
+
+        # Assign the challenge card
+        team.current_challenge_card = target_location_state.challenge_card
+        challenge_info = f"Challenge: {team.current_challenge_card.name} - {team.current_challenge_card.challenge}"
+
+        if target_location_state.status == "unclaimed":
+            target_location_state.status = "pending"
+            target_location_state.pending_team_name = team_name
+            messages.append(f"{team_name} is attempting the challenge for {location_name} (new pending claim).")
+            messages.append(challenge_info)
+        elif target_location_state.status == "pending":
+            if target_location_state.pending_team_name != team_name:
+                messages.append(f"{team_name} is attempting the challenge for {location_name} (contesting pending claim by {target_location_state.pending_team_name}).")
+            else: # Re-attempting own pending challenge
+                messages.append(f"{team_name} is re-attempting the challenge for {location_name}.")
+            messages.append(challenge_info)
         
         return messages
 
-    def finish_card(self, team_name: str) -> list[str]:
+    def complete_challenge(self, team_name: str) -> list[str]:
         messages = []
-        current_card = self.board.teams[team_name].current_card
-        if not current_card:
-            messages.append(f"Team {team_name} has no current card to finish.")
+        team = self.board.teams[team_name]
+
+        if not team.current_challenge_card:
+            messages.append(f"{team_name} has no active challenge card to complete.")
             return messages
 
-        messages.append(f"Team {team_name} completed card '{current_card.name}'.")
+        challenge_card_victory_claim = team.current_challenge_card.victory.claim
+        target_location_state = next((loc for loc in self.board.possible_claims if loc.name == challenge_card_victory_claim), None)
 
-        # Card is considered consumed from the main deck when pulled.
-        # No need to remove it from a team-specific deck here.
+        if not target_location_state:
+            messages.append(f"Error: Location '{challenge_card_victory_claim}' for the completed challenge not found.")
+            team.current_challenge_card = None # Clear broken card
+            return messages
 
-        # Process victory rewards (e.g., budget)
-        if current_card.victory.budget > 0:
-            self.board.teams[team_name].budget += current_card.victory.budget
-            messages.append(f"Team {team_name} budget increased by {current_card.victory.budget} to {self.board.teams[team_name].budget}.")
+        # Check if the location is already claimed by another team (e.g. if two teams were contesting)
+        if target_location_state.status == "claimed" and target_location_state.claimed_by_team_name != team_name:
+            messages.append(f"Unfortunately, {target_location_state.name} was already claimed by {target_location_state.claimed_by_team_name} while {team_name} was attempting the challenge.")
+            team.current_challenge_card = None
+            return messages
 
-        # Process claims
-        if current_card.victory.claim:
-            claim_name_to_acquire = current_card.victory.claim
-            claim_type_to_acquire = current_card.victory.type
-            
-            target_claim_found = False
-            for claim_idx, pos_claim in enumerate(self.board.possible_claims):
-                if pos_claim.name == claim_name_to_acquire and pos_claim.type == claim_type_to_acquire:
-                    target_claim_found = True
-                    messages.append(f"Team {team_name} attempting to claim {pos_claim.name} ({pos_claim.type}).")
+        # Proceed to claim
+        target_location_state.status = "claimed"
+        target_location_state.claimed_by_team_name = team_name
+        target_location_state.pending_team_name = None # Clear any pending status for this location
 
-                    # Add to team's claims
-                    if team_name not in self.board.claims:
-                        self.board.claims[team_name] = []
-                    self.board.claims[team_name].append(pos_claim)
-                    self.board.teams[team_name].current_claims.append(pos_claim)
-                    messages.append(f"Team {team_name} successfully claimed {pos_claim.name} ({pos_claim.type}).")
+        team.budget += team.current_challenge_card.card_budget 
+        messages.append(f"{team_name} completed the challenge '{team.current_challenge_card.name}' and claimed {target_location_state.name}!")
+        messages.append(f"Budget increased by {team.current_challenge_card.card_budget} to {team.budget}.")
+        
+        team.current_challenge_card = None
+        # Also clear the old current_card field for good measure, though it should be deprecated
+        if hasattr(team, 'current_card'): team.current_card = None
 
-                    # Remove claim from other teams if they have it
-                    for other_team_name, other_team_claims in self.board.claims.items():
-                        if other_team_name != team_name:
-                            if pos_claim in other_team_claims:
-                                self.board.claims[other_team_name].remove(pos_claim)
-                                # Also remove from their current_claims if it's tracked there
-                                if pos_claim in self.board.teams[other_team_name].current_claims:
-                                    self.board.teams[other_team_name].current_claims.remove(pos_claim)
-                                messages.append(f"Team {other_team_name} lost claim {pos_claim.name} ({pos_claim.type}).")
-                    
-                    # Remove from possible_claims
-                    self.board.possible_claims = self.board.possible_claims[:claim_idx] + self.board.possible_claims[claim_idx+1:]
-                    break 
-            
-            if not target_claim_found:
-                messages.append(f"Could not find specified claim '{claim_name_to_acquire}' ({claim_type_to_acquire}) in possible_claims.")
-
-        self.board.teams[team_name].current_card = None
-        messages.append(f"Team {team_name}'s current card slot cleared.")
         return messages

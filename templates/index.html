@@ -166,103 +166,94 @@
         <ul>
             {% for team_name, team_val in board.teams.items() %}
             <li class="team-details">
-                <h3>Team: {{ team_name }}</h3>
+                <h4>Team: {{ team_name }}</h4>
                 Position: {{ team_val.current_pos.name if team_val.current_pos else "N/A" }}<br />
                 Budget: {{ team_val.budget }}<br />
-                {% if team_val.current_card %}
-                Current Card: <strong>{{ team_val.current_card.name }}</strong> (Challenge: {{ team_val.current_card.challenge }})<br />
+                {% if team_val.current_challenge_card %}
+                    Attempting Challenge: <strong>{{ team_val.current_challenge_card.name }}</strong> at {{ team_val.current_challenge_card.victory.claim }}
+                    <p style="font-size:0.9em; color:#555;"><em>Challenge: {{ team_val.current_challenge_card.challenge }}</em></p>
+                    <form method="GET" action="/complete_challenge" style="display: inline;">
+                        <input type="hidden" name="team_name" value="{{ team_name }}" />
+                        <input type="submit" value="Complete: {{ team_val.current_challenge_card.name }}" />
+                    </form>
                 {% else %}
-                Current Card: None<br />
+                    No active challenge.<br />
                 {% endif %}
-                Claimed Locations:
-                <ul>
-                    {% for claim in team_val.current_claims %}
-                    <li>{{ claim.name }} ({{claim.type}})</li>
-                    {% else %}
-                    <li>No locations claimed yet.</li>
-                    {% endfor %}
-                </ul>
             </li>
             {% endfor %}
         </ul>
 
-        <h3>Available Claims (Locations to Claim)</h3>
+        <h3>Locations Status</h3>
         <ul>
-            {% for claim in board.possible_claims %}
-            <li>{{ claim.name }} ({{claim.type}})</li>
-            {% else %}
-            <li>No locations currently available to claim. All locations have been claimed!</li>
-            {% endfor %}
-        </ul>
-        
-        <h3>Overall Claims Status</h3>
-        <ul>
-            {% for team_name, claims_list in board.claims.items() %}
-                <li>
-                    <strong>Team {{ team_name }}:</strong>
-                    {% if claims_list %}
-                    <ul>
-                        {% for claim in claims_list %}
-                            <li>{{ claim.name }} ({{claim.type}})</li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p>No claims yet.</p>
-                    {% endif %}
-                </li>
-            {% else %}
-                <li>No teams have made any claims yet.</li>
+            {% for location in board.possible_claims %}
+            <li class="location-details" style="padding: 10px; margin-bottom:10px; border:1px solid #eee;">
+                <h4>{{ location.name }} <span style="font-weight:normal; font-size:0.9em;">({{ location.type }})</span></h4>
+                Status: <strong>{{ location.status }}</strong>
+                {% if location.status == "pending" and location.pending_team_name %}
+                    by {{ location.pending_team_name }}
+                {% elif location.status == "claimed" and location.claimed_by_team_name %}
+                    by {{ location.claimed_by_team_name }}
+                {% endif %}
+                <br />
+                
+                Challenge: {{ location.challenge_card.name }}<br />
+                <p style="font-size:0.9em; color:#555;"><em>{{ location.challenge_card.challenge }}</em></p>
+                
+                Teams currently at this location:
+                {% if location.teams_at_location %}
+                    {{ location.teams_at_location|join(', ') }}
+                {% else %}
+                    None
+                {% endif %}
+                <br />
+
+                {% if location.status != 'claimed' %}
+                    {% for team_name_at_loc in location.teams_at_location %}
+                        {% set team_obj = board.teams[team_name_at_loc] %}
+                        {% set can_attempt_challenge = True %}
+                        {% set button_action_text = "Attempt Challenge" %}
+                        {% if team_obj.current_challenge_card %}
+                            {% if team_obj.current_challenge_card.victory.claim == location.name %}
+                                {% set button_action_text = "Re-Attempt Challenge" %}
+                            {% else %}
+                                {% set can_attempt_challenge = False %}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if can_attempt_challenge %}
+                            <form method="GET" action="/attempt_challenge" style="display: inline-block; margin-top: 5px; margin-right: 5px;">
+                                <input type="hidden" name="team_name" value="{{ team_name_at_loc }}" />
+                                <input type="hidden" name="location_name" value="{{ location.name }}" />
+                                <input type="submit" value="{{ team_name_at_loc }}: {{ button_action_text }} for {{ location.name }}" />
+                            </form>
+                        {% elif team_obj.current_challenge_card %}
+                             <span style="font-size:0.8em; color: #777;">{{team_name_at_loc}} is busy with {{ team_obj.current_challenge_card.victory.claim }}.</span>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </li>
             {% endfor %}
         </ul>
     </div>
 
     <div class="section">
-        <h2>Team Actions</h2>
-
+        <h2>Global Actions</h2>
         <form method="GET" action="/team_travel">
             <h3>Team Travel</h3>
             <label for="travel_team_name">Select Team:</label>
             <select name="team_name" id="travel_team_name">
-                {% for team in board.teams.keys() %}
-                <option value="{{ team }}">{{ team }}</option>
+                {% for team_name_key in board.teams.keys() %}
+                <option value="{{ team_name_key }}">{{ team_name_key }}</option>
                 {% endfor %}
             </select>
             
-            <label for="new_pos">Select Destination:</label>
-            <select name="new_pos" id="new_pos">
-                {# Assuming possible_claims are valid travel destinations #}
+            <label for="new_pos_name">Select Destination:</label>
+            <select name="new_pos_name" id="new_pos_name">
                 {% for loc_claim in board.possible_claims %} 
-                <option value="{{ loc_claim.name }}">{{ loc_claim.name }} ({{loc_claim.type}})</option>
+                <option value="{{ loc_claim.name }}">{{ loc_claim.name }}</option>
                 {% endfor %}
-                {# It might be better to have a dedicated list of all possible travel locations if not all possible_claims are travel destinations #}
             </select>
             <input type="submit" value="Travel" />
-        </form>
-
-        <form method="GET" action="/pull_card">
-            <h3>Pull Card</h3>
-            <label for="pull_team_name">Select Team:</label>
-            <select name="team_name" id="pull_team_name">
-                {% for team in board.teams.keys() %}
-                <option value="{{ team }}">{{ team }}</option>
-                {% endfor %}
-            </select>
-            <input type="submit" value="Pull Card" />
-        </form>
-
-        <form method="GET" action="/finish_card">
-            <h3>Finish Card</h3>
-            <label for="finish_team_name">Select Team (must have an active card):</label>
-            <select name="team_name" id="finish_team_name">
-                {% for team_name_key, team_data_val in board.teams.items() %}
-                    {% if team_data_val.current_card %}
-                         <option value="{{ team_name_key }}">{{ team_name_key }} (Active card: {{ team_data_val.current_card.name }})</option>
-                    {% else %}
-                         <option value="{{ team_name_key }}" disabled>{{ team_name_key }} (No active card)</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-            <input type="submit" value="Finish Card" />
         </form>
     </div>
 
