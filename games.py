@@ -76,7 +76,7 @@ class SchengenShowdown:
     def __init__(self, json_path: str) -> None:
         self.board = load_json_game(json_path)
 
-    def team_travel(self, team_name: str, new_pos: Position, cost: float) -> None:
+    def team_travel(self, team_name: str, new_pos: Position, cost: float) -> list[str]:
         messages = []
         team = self.board.teams[team_name]
         team.current_pos = new_pos
@@ -96,39 +96,108 @@ class SchengenShowdown:
 
         return messages
 
-    def pull_card(self, deck_name: str, team_name: str) -> None:
+    def pull_card(self, deck_name: str, team_name: str) -> list[str]:
         messages = []
-        deck = self.board.decks[deck_name]
-        if (team_name == deck.team) or ("any" == deck.team):
-            for card in deck.deck:
-                if card.victory.claim == self.board.teams[team_name].current_pos.name:
-                    pulled_card = card
-                    messages.append(f"Team {team_name} pulled card {pulled_card.name}")
-                    self.board.teams[team_name].current_card = pulled_card
-                    return messages
+        
+        if deck_name not in self.board.decks:
+            messages.append(f"Deck '{deck_name}' not found.")
+            return messages
+        source_deck_model = self.board.decks[deck_name]
 
-            messages.append("Team not in position to pull card or card already claimed!")
+        team = self.board.teams[team_name]
+
+        if not ((team_name == source_deck_model.team) or ("any" == source_deck_model.team)):
+            messages.append(f"Team {team_name} is not allowed to pull from deck {deck_name}.")
             return messages
 
-    def finish_card(self, team_name):
-        print(f"Team {team_name} finished card {self.board.teams[team_name].current_card.name}")
-        for card_idx, card in enumerate(self.board.decks[team_name].deck):
-            if card.name == self.board.teams[team_name].current_card.name:
-                self.board.decks[team_name].deck = (
-                    self.board.decks[team_name].deck[:card_idx] + self.board.decks[team_name].deck[card_idx + 1 :]
+        if not team.current_pos:
+            messages.append(f"Team {team_name} has no current position, cannot determine card eligibility.")
+            return messages
+            
+        if team.current_card:
+            messages.append(f"Team {team_name} already has an active card: {team.current_card.name}. Finish it first.")
+            return messages
+
+        card_to_pull_idx = -1
+        pulled_card_obj = None # Use a different variable name to avoid confusion
+
+        for idx, card_in_deck in enumerate(source_deck_model.deck):
+            if card_in_deck.victory.claim == team.current_pos.name:
+                # Check if this claim is still available in board.possible_claims
+                is_claim_still_available = any(
+                    pc.name == card_in_deck.victory.claim and pc.type == card_in_deck.victory.type
+                    for pc in self.board.possible_claims
                 )
-        for claim_idx, pos_claim in enumerate(self.board.possible_claims):
-            if (pos_claim.name == self.board.teams[team_name].current_card.victory.claim) and (
-                pos_claim.type == self.board.teams[team_name].current_card.victory.type
-            ):
-                print(f"Team {team_name} claimed {pos_claim.name}")
-            if team_name not in self.board.claims.keys():
-                self.board.claims[team_name] = []
-            self.board.claims[team_name].append(pos_claim)
-            for other_teams in self.board.claims.keys():
-                if other_teams != team_name:
-                    if pos_claim in self.board.claims[other_teams]:
-                        print(f"Team {other_teams} lost claim {pos_claim.name}")
-                        self.board.claims[other_teams].remove(pos_claim)
-            self.board.possible_claims = self.board.possible_claims[:claim_idx] + self.board.possible_claims[claim_idx + 1 :]
-            self.board.teams[team_name].current_claims.append(pos_claim)
+                
+                if is_claim_still_available:
+                    pulled_card_obj = card_in_deck
+                    card_to_pull_idx = idx
+                    break # Found a suitable card
+                # else:
+                    # Optionally, message if card targets an already claimed location
+                    # messages.append(f"Card '{card_in_deck.name}' targets location '{card_in_deck.victory.claim}', which is no longer available.")
+        
+        if pulled_card_obj is not None and card_to_pull_idx != -1:
+            team.current_card = pulled_card_obj
+            source_deck_model.deck.pop(card_to_pull_idx) # Remove the card from the source deck
+            messages.append(f"Team {team_name} pulled card '{pulled_card_obj.name}' from {deck_name}. Card removed from source deck.")
+        else:
+            messages.append(f"Team {team_name} could not pull a card from {deck_name} for their current location '{team.current_pos.name}'. This could be because no card targets this location, the location is already claimed, or the deck is empty.")
+        
+        return messages
+
+    def finish_card(self, team_name: str) -> list[str]:
+        messages = []
+        current_card = self.board.teams[team_name].current_card
+        if not current_card:
+            messages.append(f"Team {team_name} has no current card to finish.")
+            return messages
+
+        messages.append(f"Team {team_name} completed card '{current_card.name}'.")
+
+        # Card is considered consumed from the main deck when pulled.
+        # No need to remove it from a team-specific deck here.
+
+        # Process victory rewards (e.g., budget)
+        if current_card.victory.budget > 0:
+            self.board.teams[team_name].budget += current_card.victory.budget
+            messages.append(f"Team {team_name} budget increased by {current_card.victory.budget} to {self.board.teams[team_name].budget}.")
+
+        # Process claims
+        if current_card.victory.claim:
+            claim_name_to_acquire = current_card.victory.claim
+            claim_type_to_acquire = current_card.victory.type
+            
+            target_claim_found = False
+            for claim_idx, pos_claim in enumerate(self.board.possible_claims):
+                if pos_claim.name == claim_name_to_acquire and pos_claim.type == claim_type_to_acquire:
+                    target_claim_found = True
+                    messages.append(f"Team {team_name} attempting to claim {pos_claim.name} ({pos_claim.type}).")
+
+                    # Add to team's claims
+                    if team_name not in self.board.claims:
+                        self.board.claims[team_name] = []
+                    self.board.claims[team_name].append(pos_claim)
+                    self.board.teams[team_name].current_claims.append(pos_claim)
+                    messages.append(f"Team {team_name} successfully claimed {pos_claim.name} ({pos_claim.type}).")
+
+                    # Remove claim from other teams if they have it
+                    for other_team_name, other_team_claims in self.board.claims.items():
+                        if other_team_name != team_name:
+                            if pos_claim in other_team_claims:
+                                self.board.claims[other_team_name].remove(pos_claim)
+                                # Also remove from their current_claims if it's tracked there
+                                if pos_claim in self.board.teams[other_team_name].current_claims:
+                                    self.board.teams[other_team_name].current_claims.remove(pos_claim)
+                                messages.append(f"Team {other_team_name} lost claim {pos_claim.name} ({pos_claim.type}).")
+                    
+                    # Remove from possible_claims
+                    self.board.possible_claims = self.board.possible_claims[:claim_idx] + self.board.possible_claims[claim_idx+1:]
+                    break 
+            
+            if not target_claim_found:
+                messages.append(f"Could not find specified claim '{claim_name_to_acquire}' ({claim_type_to_acquire}) in possible_claims.")
+
+        self.board.teams[team_name].current_card = None
+        messages.append(f"Team {team_name}'s current card slot cleared.")
+        return messages

@@ -5,63 +5,266 @@
     <meta charset="UTF-8" />
     <title>Schengen Showdown!</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content="" />
+    <meta name="description" content="Schengen Showdown Game Interface" />
     <link rel="icon" href="favicon.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background-color: #fff;
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .section h3 {
+            font-size: 1.2em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        form {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        form select,
+        form input[type="submit"] {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%; 
+            box-sizing: border-box;
+        }
+        
+        form input[type="submit"] {
+            background-color: #5cb85c;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #4cae4c;
+        }
+        
+        form input[type="submit"]:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        form select[disabled] {
+            background-color: #eee;
+            cursor: not-allowed;
+        }
+
+
+        .game-log ul {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 15px;
+            background-color: #fdfdfd;
+            border-radius: 4px;
+        }
+        .team-details {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px;
+        }
+        .team-details h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .team-details ul li {
+            padding-left: 15px;
+            font-size: 0.95em;
+        }
+        .team-details ul {
+            margin-top: 5px;
+        }
+
+    </style>
 </head>
 
 <body>
     <h1>Schengen Showdown</h1>
-    {% if messages %}
-    <h2> Messages</h2>
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <h2>Current Board</h2>
-    <h3>Teams</h3>
-    <ul>
-        {% for team, val in board.teams.items() %}
-        <li>
-            {{ team }} currently at {{ val["current_pos"]["name"] }} claiming {{ val["current_claims"] }}
-            {% if val["current_card"] %}
-            <br />
-            <strong>Current card:</strong>
-            {{ val["current_card"] }}
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-    <h2> Next move </h2>
-    <form method="GET" action="/team_travel">
-        <label for="team_name">Team:</label>
-        <select name="team_name" id="team_name">
-            {% for team in board.teams.keys() %}
-            <option value="{{ team }}">{{ team }}</option>
+
+    <div class="section game-log">
+        <h2>Game Log</h2>
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
             {% endfor %}
-        </select>
-        <br />
-        <label for="new_pos">Country:</label>
-        <select name="new_pos" id="new_pos">
-            {% for country in board.possible_claims %}
-            <option value="{{ country.name }}">{{ country.name }}</option>
+        </ul>
+        {% else %}
+        <p>No new messages. Perform an action to see updates.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Game Status</h2>
+        
+        <h3>Teams</h3>
+        <ul>
+            {% for team_name, team_val in board.teams.items() %}
+            <li class="team-details">
+                <h3>Team: {{ team_name }}</h3>
+                Position: {{ team_val.current_pos.name if team_val.current_pos else "N/A" }}<br />
+                Budget: {{ team_val.budget }}<br />
+                {% if team_val.current_card %}
+                Current Card: <strong>{{ team_val.current_card.name }}</strong> (Challenge: {{ team_val.current_card.challenge }})<br />
+                {% else %}
+                Current Card: None<br />
+                {% endif %}
+                Claimed Locations:
+                <ul>
+                    {% for claim in team_val.current_claims %}
+                    <li>{{ claim.name }} ({{claim.type}})</li>
+                    {% else %}
+                    <li>No locations claimed yet.</li>
+                    {% endfor %}
+                </ul>
+            </li>
             {% endfor %}
-            <br />
-            <input type="submit" value="Submit Move" />
-    </form>
-    <h2> Pull Cards </h2>
-    <form method="GET" action="/pull_card">
-        <label for="team_name">Team:</label>
-        <select name="team_name" id="team_name">
-            {% for team in board.teams.keys() %}
-            <option value="{{ team }}">{{ team }}</option>
+        </ul>
+
+        <h3>Available Claims (Locations to Claim)</h3>
+        <ul>
+            {% for claim in board.possible_claims %}
+            <li>{{ claim.name }} ({{claim.type}})</li>
+            {% else %}
+            <li>No locations currently available to claim. All locations have been claimed!</li>
             {% endfor %}
-        </select>
-        <br />
-        <input type="submit" value="Pull Card" />
-    </form>
+        </ul>
+        
+        <h3>Overall Claims Status</h3>
+        <ul>
+            {% for team_name, claims_list in board.claims.items() %}
+                <li>
+                    <strong>Team {{ team_name }}:</strong>
+                    {% if claims_list %}
+                    <ul>
+                        {% for claim in claims_list %}
+                            <li>{{ claim.name }} ({{claim.type}})</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No claims yet.</p>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li>No teams have made any claims yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Team Actions</h2>
+
+        <form method="GET" action="/team_travel">
+            <h3>Team Travel</h3>
+            <label for="travel_team_name">Select Team:</label>
+            <select name="team_name" id="travel_team_name">
+                {% for team in board.teams.keys() %}
+                <option value="{{ team }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="new_pos">Select Destination:</label>
+            <select name="new_pos" id="new_pos">
+                {# Assuming possible_claims are valid travel destinations #}
+                {% for loc_claim in board.possible_claims %} 
+                <option value="{{ loc_claim.name }}">{{ loc_claim.name }} ({{loc_claim.type}})</option>
+                {% endfor %}
+                {# It might be better to have a dedicated list of all possible travel locations if not all possible_claims are travel destinations #}
+            </select>
+            <input type="submit" value="Travel" />
+        </form>
+
+        <form method="GET" action="/pull_card">
+            <h3>Pull Card</h3>
+            <label for="pull_team_name">Select Team:</label>
+            <select name="team_name" id="pull_team_name">
+                {% for team in board.teams.keys() %}
+                <option value="{{ team }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Pull Card" />
+        </form>
+
+        <form method="GET" action="/finish_card">
+            <h3>Finish Card</h3>
+            <label for="finish_team_name">Select Team (must have an active card):</label>
+            <select name="team_name" id="finish_team_name">
+                {% for team_name_key, team_data_val in board.teams.items() %}
+                    {% if team_data_val.current_card %}
+                         <option value="{{ team_name_key }}">{{ team_name_key }} (Active card: {{ team_data_val.current_card.name }})</option>
+                    {% else %}
+                         <option value="{{ team_name_key }}" disabled>{{ team_name_key }} (No active card)</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <input type="submit" value="Finish Card" />
+        </form>
+    </div>
 
 </body>
-
 </html>
