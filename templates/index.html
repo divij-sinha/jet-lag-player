@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8" />
-    <title>Schengen Showdown!</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content="" />
-    <link rel="icon" href="favicon.png">
-    <link href="{{ url_for('static', path='/output.css') }}" rel="stylesheet">
-</head>
-
-<body>
-    <h1 class="text-4xl font-bold">Schengen Showdown</h1>
+{% block content %}
+<div class="mx-4">
+    <h1 class="text-4xl font-bold text-center">{{ title }}</h1>
     {% if messages %}
     <h2 class="text-2xl font-semibold"> Messages</h2>
     <ul>
@@ -22,47 +13,48 @@
     {% endif %}
     <h2 class="text-2xl font-semibold">Current Board</h2>
     <h3 class="text-xl font-medium">Teams</h3>
-    <ul>
+    <div class="grid grid-cols-2 gap-4 mx-10">
         {% for team, val in board.teams.items() %}
-        <li>
-            {{ team }} currently at {{ val["current_pos"]["name"] }} claiming {{ val["current_claims"] }}
+        <div class="bg-gray-200 p-4 rounded-xl">
+            <div class="text-lg font-bold">{{ team }}</div>
+
+            <p class="text-gray-500">In {{ val["current_pos"]["name"] }}</p>
+            <p class="">Claiming {{ val["current_claims"] }}</p>
             {% if val["current_card"] %}
-            <br />
-            <strong>Current card:</strong>
-            {{ val["current_card"] }}
+            <div class="flex justify-center">
+                <div class="border-2 w-1/2 rounded-xl bg-white shadow">
+                    <p class="text-start font-semibold mx-1 my-3">{{ val["current_card"]["name"] }}</p>
+                    <p class="text-start mx-1">{{ val["current_card"]["challenge"] }}</p>
+                    <div class="flex text-center justify-between mx-1 my-3">
+                        <a href="/finish_card?team_name={{ team }}"
+                            class="bg-blue-500 hover:bg-blue-700 text-white w-100 h-10 flex items-center justify-center">
+                            Finished!
+                        </a>
+                    </div>
+
+                </div>
+            </div>
             {% endif %}
-        </li>
+
+            <!-- Footer section -->
+            <div class="mt-4 pt-2 border-t border-gray-300">
+                <a href="/pull_card?team_name={{ team }}"
+                    class="inline-block rounded-lg bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 cursor-pointer transition-colors duration-200 text-center">
+                    Pull Card
+                </a>
+                <form method="GET" action="/team_travel">
+                    <input name="team_name" id="team_name" value="{{ team }}" hidden />
+                    <label for="new_pos">Country:</label>
+                    <select name="new_pos" id="new_pos">
+                        {% for country in board.possible_claims %}
+                        <option value="{{ country.name }}">{{ country.name }}</option>
+                        {% endfor %}
+                        <br />
+                        <input type="submit" value="Submit Move" />
+                </form>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
-    <h2> Next move </h2>
-    <form method="GET" action="/team_travel">
-        <label for="team_name">Team:</label>
-        <select name="team_name" id="team_name">
-            {% for team in board.teams.keys() %}
-            <option value="{{ team }}">{{ team }}</option>
-            {% endfor %}
-        </select>
-        <br />
-        <label for="new_pos">Country:</label>
-        <select name="new_pos" id="new_pos">
-            {% for country in board.possible_claims %}
-            <option value="{{ country.name }}">{{ country.name }}</option>
-            {% endfor %}
-            <br />
-            <input type="submit" value="Submit Move" />
-    </form>
-    <h2> Pull Cards </h2>
-    <form method="GET" action="/pull_card">
-        <label for="team_name">Team:</label>
-        <select name="team_name" id="team_name">
-            {% for team in board.teams.keys() %}
-            <option value="{{ team }}">{{ team }}</option>
-            {% endfor %}
-        </select>
-        <br />
-        <input type="submit" value="Pull Card" />
-    </form>
-
-</body>
-
-</html>
+    </div>
+</div>
+{% endblock %}
